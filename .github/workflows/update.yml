@@ -19,3 +19,9 @@ jobs:
           git add Formula/bohselecta.rb
           git commit -m 'Update bohselecta to the latest released formula'
           git push
+
+  test:
+    needs: update
+    uses: ./.github/workflows/test.yml
+    permissions:
+      contents: read

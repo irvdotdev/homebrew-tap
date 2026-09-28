@@ -11,6 +11,8 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       - run: python3 scripts/update.py
+        env:
+          GH_TOKEN: ${{ github.token }}
       - name: Commit verified release formula
         run: |
           if git diff --quiet; then exit 0; fi

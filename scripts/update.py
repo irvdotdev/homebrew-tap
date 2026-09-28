@@ -1,8 +1,11 @@
-import hashlib,json,urllib.request
+import hashlib,json,os,urllib.request,urllib.parse
 from pathlib import Path
 
 def get(url):
-    request=urllib.request.Request(url,headers={'User-Agent':'bohselecta-homebrew','Accept':'application/vnd.github+json'})
+    headers={'User-Agent':'bohselecta-homebrew','Accept':'application/vnd.github+json'}
+    if urllib.parse.urlparse(url).hostname=='api.github.com' and os.environ.get('GH_TOKEN'):
+        headers['Authorization']='Bearer '+os.environ['GH_TOKEN']
+    request=urllib.request.Request(url,headers=headers)
     return urllib.request.urlopen(request,timeout=60).read()
 
 releases=json.loads(get('https://api.github.com/repos/irvdotdev/bohselecta/releases?per_page=30'))

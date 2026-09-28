@@ -5,6 +5,10 @@ on:
   pull_request:
   workflow_dispatch:
   workflow_call:
+    inputs:
+      ref:
+        type: string
+        default: ""
 permissions:
   contents: read
 jobs:
@@ -15,6 +19,8 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v6
+        with:
+          ref: ${{ inputs.ref || github.sha }}
       - uses: Homebrew/actions/setup-homebrew@main
       - run: brew tap irvdotdev/tap "$GITHUB_WORKSPACE"
       - run: brew install irvdotdev/tap/bohselecta

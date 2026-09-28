@@ -23,5 +23,7 @@ jobs:
   test:
     needs: update
     uses: ./.github/workflows/test.yml
+    with:
+      ref: main
     permissions:
       contents: read

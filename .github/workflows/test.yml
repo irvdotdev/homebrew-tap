@@ -14,6 +14,7 @@ permissions:
 jobs:
   test:
     strategy:
+      fail-fast: false
       matrix:
         os: [macos-15, ubuntu-22.04]
     runs-on: ${{ matrix.os }}
@@ -22,5 +23,19 @@ jobs:
         with:
           ref: ${{ inputs.ref || github.sha }}
       - uses: Homebrew/actions/setup-homebrew@main
+      - name: Select the requested formula after Homebrew checkout setup
+        env:
+          BOH_TEST_REF: ${{ inputs.ref || github.sha }}
+        run: |
+          tap_path="$(brew --repo irvdotdev/tap)"
+          git -C "$tap_path" fetch origin "$BOH_TEST_REF"
+          git -C "$tap_path" checkout --detach FETCH_HEAD
+          brew info irvdotdev/tap/bohselecta
+      - name: Unlink the runner's legacy OpenSSL before installing current dependencies
+        if: runner.os == 'macOS'
+        run: |
+          if brew list --versions openssl@1.1 >/dev/null 2>&1; then
+            brew unlink openssl@1.1
+          fi
       - run: brew install irvdotdev/tap/bohselecta
       - run: brew test irvdotdev/tap/bohselecta

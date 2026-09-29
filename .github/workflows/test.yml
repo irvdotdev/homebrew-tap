@@ -37,5 +37,11 @@ jobs:
           if brew list --versions openssl@1.1 >/dev/null 2>&1; then
             brew unlink openssl@1.1
           fi
+          # The runner also provides an opt-based link that brew unlink misses.
+          brew_prefix="$(brew --prefix)"
+          openssl_link="$brew_prefix/bin/openssl"
+          if [ -L "$openssl_link" ] && [ "$(readlink "$openssl_link")" = "$brew_prefix/opt/openssl@1.1/bin/openssl" ]; then
+            rm "$openssl_link"
+          fi
       - run: brew install irvdotdev/tap/bohselecta
       - run: brew test irvdotdev/tap/bohselecta
